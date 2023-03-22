@@ -18,3 +18,8 @@ pip install -r requirements.txt
 ```
 
 Remember to switch to the virtual environment when doing anything with this project
+
+Run the django server with:
+```bash
+python manage.py runserver
+```
