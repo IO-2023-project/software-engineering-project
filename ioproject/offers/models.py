@@ -7,10 +7,9 @@ class ClientOrder(models.Model):
     status = models.IntegerField()
 
 
-class MechanicsOffer(models.Model):
+class MechanicOffer(models.Model):
     client_order = \
         models.ForeignKey(ClientOrder, on_delete=models.CASCADE) # delete all offers related to deleted order
-    offer_content = models.CharField(max_length=1024)
+    offer_content = models.TextField()
     offer_price = models.FloatField()
-
 
