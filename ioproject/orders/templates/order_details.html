@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Szczegóły zamówienia</title>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <h1>Szczegóły zamówienia #{{ order.id }}</h1>
+        {% if success %}
+        <p>Numer rejestracyjny: {{ order.registration_number }}</p>
+        <p>Adres email: {{ order.email }}</p>
+        <p>Status naprawy: {{ order.status }}</p>
+        {% else %}
+        <p>Coś poszło nie tak...</p>
+        {% endif %}
+    </body>
+</html>
