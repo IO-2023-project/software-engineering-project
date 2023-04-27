@@ -5,13 +5,14 @@
         <meta charset="UTF-8">
     </head>
     <body>
-        <h1>Szczegóły zamówienia #{{ order.id }}</h1>
         {% if success %}
+        <h1>Szczegóły zamówienia #{{ order.id }}</h1>
         <p>Numer rejestracyjny: {{ order.registration_number }}</p>
         <p>Adres email: {{ order.email }}</p>
         <p>Status naprawy: {{ order.status }}</p>
         {% else %}
-        <p>Coś poszło nie tak...</p>
+        <h1>Szczegóły zamówienia #{{ id }}</h1>
+        <p>Zlecenie o numerze {{ id }} nie istnieje.</p>
         {% endif %}
     </body>
 </html>
