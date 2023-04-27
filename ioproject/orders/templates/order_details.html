@@ -3,6 +3,31 @@
     <head>
         <title>Szczegóły zamówienia</title>
         <meta charset="UTF-8">
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 0.5%;
+                child-align: middle;
+            }
+            td > textarea, td > input {
+                width: 99%;
+                resize: vertical;
+            }
+            table {
+                width: 90%;
+                table-layout: fixed;
+                margin: 10px;
+            }
+            #id_column, #price_column {
+                width: 15%;
+            }
+            input, input:focus, textarea, textarea:focus {
+                border: 0;
+                border-bottom: 1px solid lightgrey;
+                outline: none;
+            }
+        </style>
     </head>
     <body>
         {% if success %}
@@ -10,9 +35,83 @@
         <p>Numer rejestracyjny: {{ order.registration_number }}</p>
         <p>Adres email: {{ order.email }}</p>
         <p>Status naprawy: {{ order.status }}</p>
+        <div id="offers_container">
+            <h3>Oferty</h3>
+            <form method="post" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">{%csrf_token%}</form>
+            <table id="offers_table">
+                <tr>
+                    <th id="id_column">ID</th>
+                    <th id="offer_column">Oferta</th>
+                    <th id="price_column">Cena</th>
+                </tr>
+                {% for offer in offers %}
+                <tr>
+                    <td>{{ offer.id }}</td>
+                    <td>{{ offer.offer_content }}</td>
+                    <td>{{ offer.offer_price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+            <button id="add_offer_button" onclick="addRow()">Dodaj ofertę</button>
+        </div>
         {% else %}
-        <h1>Szczegóły zamówienia #{{ id }}</h1>
-        <p>Zlecenie o numerze {{ id }} nie istnieje.</p>
+        <h1>Coś poszło nie tak...</h1>
+        <p>{{ message }}</p>
         {% endif %}
+
+        <script>
+            let offers_container = document.getElementById("offers_container");
+            function addRow(id) {
+                let offers_table = document.getElementById("offers_table");
+
+                let add_offer_button = document.getElementById("add_offer_button");
+                offers_container.removeChild(add_offer_button);
+
+                let new_row = document.createElement("tr");
+                let form = document.getElementById("new_offer_form");
+
+                let id_cell = document.createElement("td");
+                new_row.appendChild(id_cell);
+
+                let content_cell = document.createElement("td");
+                let content_input = document.createElement("textarea");
+                content_input.setAttribute("name", "offer_content");
+                content_input.setAttribute("form", "new_offer_form");
+                content_input.required = true;
+                content_cell.appendChild(content_input);
+                new_row.appendChild(content_cell);
+
+                let price_cell = document.createElement("td");
+                let price_input = document.createElement("input");
+                price_input.setAttribute("name", "offer_price");
+                price_input.setAttribute("type", "number");
+                price_input.setAttribute("step", "0.01");
+                price_input.setAttribute("min", "0");
+                price_input.setAttribute("form", "new_offer_form");
+                price_input.required = true;
+                price_cell.appendChild(price_input);
+                new_row.appendChild(price_cell);
+
+                offers_table.appendChild(new_row);
+
+                let submit_button = document.createElement("button");
+                submit_button.setAttribute("type", "submit");
+                submit_button.setAttribute("form", "new_offer_form");
+                submit_button.setAttribute("id", "submit_button");
+                submit_button.appendChild(document.createTextNode("Zapisz"));
+                form.setAttribute("onsubmit", "transformFormToTable()");
+                offers_container.appendChild(submit_button);
+            }
+
+            function transformFormToTable() {
+                offers_container.removeChild(document.getElementById("submit_button"));
+
+                let add_row_button = document.createElement("button");
+                add_row_button.setAttribute("id", "add_offer_button");
+                add_row_button.setAttribute("onclick", "addRow()");
+                add_row_button.appendChild(document.createTextNode("Dodaj ofertę"));
+                offers_container.appendChild(add_row_button);
+            }
+        </script>
     </body>
 </html>
