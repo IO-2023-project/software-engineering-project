@@ -1,10 +1,12 @@
+import pathlib
 import smtplib
 import ssl
 from email.message import EmailMessage
 
+CREDENTIALS = pathlib.Path(__file__).parent.parent.parent / "ioproject/mail/credentials.txt"
 
 # TODO: dodać link do strony z logowaniem dla kliena
-LOGIN_CUSTOMER_PAGE = "TODO"  # nie wiem jaki ma być link
+LOGIN_CUSTOMER_PAGE = "TODO: link do strony ze sprawdzaniem zamówień"  # nie wiem jaki ma być link
 
 
 def send_email(receiver_email: str, msg: EmailMessage) -> None:
@@ -15,7 +17,7 @@ def send_email(receiver_email: str, msg: EmailMessage) -> None:
     """
     port = 465  # For SSL
 
-    credentials = open("credentials.txt", 'r')  # login information
+    credentials = open(CREDENTIALS, 'r')  # login information
     sender_email = credentials.readline().split()[0]
     password = credentials.readline().split()[0]
 
@@ -43,11 +45,11 @@ def send_new_order_email(customer_email: str, link: str, order_id: int, registra
 
     msg["Subject"] = f"Mechanik - Potwierdzenie utworzenia zlecenia"
 
-    body = f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało utworzone.\n"
+    body = (f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało utworzone.\n"
     f"Możesz śledzić postępy korzystając z podanego linku:\n\t{link}\n"
     f"lub zalogować się na stronie:\n\t{LOGIN_CUSTOMER_PAGE}\n"
     f"za pomocą id zlecenia:\n\t{order_id}\n\n"
-    f"Twój Pan Mechanik"
+    f"Twój Pan Mechanik")
 
     msg.set_content(body)
 

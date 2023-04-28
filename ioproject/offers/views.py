@@ -3,12 +3,12 @@ from django.shortcuts import render
 
 from .models import ClientOrder
 from .status import OrderStatus
-from ..mail.send_email import send_new_order_email
+# from ioproject.mail.send_email import send_new_order_email
+import mail.send_email as mail
 
 CUSTOMER_LINK = "TODO"
-
-
 #  TODO: dodać poprawny link do strony ze zleceniem klienta
+#   (task BP?)
 
 
 def register(request):
@@ -25,7 +25,8 @@ def register(request):
         order.save()
         order_id = order.pk
 
-        send_new_order_email(email, CUSTOMER_LINK + str(order_id), order_id, registration_number)
+        mail.send_new_order_email(email, CUSTOMER_LINK + str(order_id), order_id, registration_number)
+        # TODO: tutaj też ewentualne poprawki przy wysyłaniu emaila
 
         return render(request, "register.html", {"success": True})
 
