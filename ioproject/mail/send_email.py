@@ -1,12 +1,13 @@
-import pathlib
 import smtplib
 import ssl
 from email.message import EmailMessage
 
-CREDENTIALS = pathlib.Path(__file__).parent.parent.parent / "ioproject/mail/credentials.txt"
+from ioproject.mail.load_credentials import load_credentials
+
 
 # TODO: dodać link do strony z logowaniem dla kliena
 LOGIN_CUSTOMER_PAGE = "TODO: link do strony ze sprawdzaniem zamówień"  # nie wiem jaki ma być link
+SENDER_EMAIL, PASSWORD = load_credentials()
 
 
 def send_email(receiver_email: str, msg: EmailMessage) -> None:
@@ -17,19 +18,15 @@ def send_email(receiver_email: str, msg: EmailMessage) -> None:
     """
     port = 465  # For SSL
 
-    credentials = open(CREDENTIALS, 'r')  # login information
-    sender_email = credentials.readline().split()[0]
-    password = credentials.readline().split()[0]
-
-    msg['From'] = sender_email
+    msg['From'] = SENDER_EMAIL
     msg["To"] = receiver_email
 
     context = ssl.create_default_context()
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
-        server.login(sender_email, password)
+        server.login(SENDER_EMAIL, PASSWORD)
 
-        server.sendmail(sender_email, receiver_email, msg.as_string())
+        server.sendmail(SENDER_EMAIL, receiver_email, msg.as_string())
 
 
 def send_new_order_email(customer_email: str, link: str, order_id: int, registration_number: str) -> None:
@@ -46,15 +43,14 @@ def send_new_order_email(customer_email: str, link: str, order_id: int, registra
     msg["Subject"] = f"Mechanik - Potwierdzenie utworzenia zlecenia"
 
     body = (f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało utworzone.\n"
-    f"Możesz śledzić postępy korzystając z podanego linku:\n\t{link}\n"
-    f"lub zalogować się na stronie:\n\t{LOGIN_CUSTOMER_PAGE}\n"
-    f"za pomocą id zlecenia:\n\t{order_id}\n\n"
-    f"Twój Pan Mechanik")
+            f"Możesz śledzić postępy korzystając z podanego linku:\n\t{link}\n"
+            f"lub zalogować się na stronie:\n\t{LOGIN_CUSTOMER_PAGE}\n"
+            f"za pomocą id zlecenia:\n\t{order_id}\n\n"
+            f"Twój Pan Mechanik")
 
     msg.set_content(body)
 
     send_email(customer_email, msg)
 
-
 # przykład wywołania
-# send_new_order_email("twoj.najulubienszy.mechanik@gmail.com", "https://tenor.com/pl/view/cheers-raise-your-glass-gentlemen-nice-clapping-gif-5555911", 0, "KK 678J")
+# send_new_order_email("b.pawelek-sliwa@wp.pl", "https://tenor.com/pl/view/cheers-raise-your-glass-gentlemen-nice-clapping-gif-5555911", 0, "KK 678J")
