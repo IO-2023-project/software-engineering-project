@@ -2,7 +2,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
-from ioproject.mail.load_credentials import load_credentials
+from mail.load_credentials import load_credentials
 
 
 # TODO: dodać link do strony z logowaniem dla kliena

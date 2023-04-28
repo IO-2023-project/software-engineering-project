@@ -1,4 +1,4 @@
-from ioproject.ioproject.settings import BASE_DIR
+from ioproject.settings import BASE_DIR
 
 
 CREDENTIALS_DIR = BASE_DIR / "mail\credentials.txt"
