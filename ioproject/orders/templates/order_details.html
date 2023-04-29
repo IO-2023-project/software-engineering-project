@@ -37,7 +37,9 @@
         <p>Status naprawy: {{ order.status }}</p>
         <div id="offers_container">
             <h3>Oferty</h3>
-            <form method="post" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">{%csrf_token%}</form>
+            <form method="POST" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">
+                {%csrf_token%}
+            </form>
             <table id="offers_table">
                 <tr>
                     <th id="id_column">ID</th>
@@ -61,56 +63,79 @@
 
         <script>
             let offers_container = document.getElementById("offers_container");
-            function addRow(id) {
-                let offers_table = document.getElementById("offers_table");
+            let offers_table = document.getElementById("offers_table");
+            let form_id = "new_offer_form";
+            let form = document.getElementById(form_id);
+            let submit_button_id = "submit_button";
+            let delete_offer_button_id = "delete_offer_button";
+            let input_counter = 0;
 
-                let add_offer_button = document.getElementById("add_offer_button");
-                offers_container.removeChild(add_offer_button);
+            function addRow() {
+                input_counter++;
 
                 let new_row = document.createElement("tr");
-                let form = document.getElementById("new_offer_form");
+                new_row.setAttribute("id", "row_" + input_counter);
 
-                let id_cell = document.createElement("td");
-                new_row.appendChild(id_cell);
+                addCellToRow(new_row, null);
 
-                let content_cell = document.createElement("td");
                 let content_input = document.createElement("textarea");
-                content_input.setAttribute("name", "offer_content");
-                content_input.setAttribute("form", "new_offer_form");
+                content_input.setAttribute("name", "offer_content_" + input_counter);
+                content_input.setAttribute("form", form_id);
                 content_input.required = true;
-                content_cell.appendChild(content_input);
-                new_row.appendChild(content_cell);
+                addCellToRow(new_row, content_input);
 
-                let price_cell = document.createElement("td");
                 let price_input = document.createElement("input");
-                price_input.setAttribute("name", "offer_price");
+                price_input.setAttribute("name", "offer_price_" + input_counter);
                 price_input.setAttribute("type", "number");
                 price_input.setAttribute("step", "0.01");
                 price_input.setAttribute("min", "0");
-                price_input.setAttribute("form", "new_offer_form");
+                price_input.setAttribute("form", form_id);
                 price_input.required = true;
-                price_cell.appendChild(price_input);
-                new_row.appendChild(price_cell);
+                addCellToRow(new_row, price_input);
 
                 offers_table.appendChild(new_row);
 
-                let submit_button = document.createElement("button");
-                submit_button.setAttribute("type", "submit");
-                submit_button.setAttribute("form", "new_offer_form");
-                submit_button.setAttribute("id", "submit_button");
-                submit_button.appendChild(document.createTextNode("Zapisz"));
-                form.setAttribute("onsubmit", "transformFormToTable()");
-                offers_container.appendChild(submit_button);
+                if (input_counter === 1) {
+                    createButtons();
+                }
             }
 
-            function transformFormToTable() {
-                offers_container.removeChild(document.getElementById("submit_button"));
+            function addCellToRow(row, cell_content) {
+                let cell = document.createElement("td");
+                if (cell_content !== null) {
+                    cell.appendChild(cell_content);
+                }
+                row.appendChild(cell);
+            }
 
-                let add_row_button = document.createElement("button");
-                add_row_button.setAttribute("id", "add_offer_button");
-                add_row_button.setAttribute("onclick", "addRow()");
-                add_row_button.appendChild(document.createTextNode("Dodaj ofertę"));
-                offers_container.appendChild(add_row_button);
+            function createButtons() {
+                let delete_button = document.createElement("button");
+                    delete_button.setAttribute("id", delete_offer_button_id);
+                    delete_button.appendChild(document.createTextNode("Usuń ostatnią ofertę"));
+                    delete_button.setAttribute("onclick", "removeRow()");
+                    offers_container.appendChild(delete_button);
+
+                    let submit_button = document.createElement("button");
+                    submit_button.setAttribute("type", "submit");
+                    submit_button.setAttribute("form", form_id);
+                    submit_button.setAttribute("id", submit_button_id);
+                    submit_button.appendChild(document.createTextNode("Zapisz"));
+                    form.setAttribute("onsubmit", "removeSubmitButton()");
+                    offers_container.appendChild(submit_button);
+            }
+
+            function removeSubmitButton() {
+                offers_container.removeChild(document.getElementById(submit_button_id));
+            }
+
+            function removeRow() {
+                offers_table.removeChild(document.getElementById("row_" + input_counter));
+                input_counter--;
+
+                if (input_counter === 0) {
+                    offers_container.removeChild(document.getElementById(delete_offer_button_id));
+                    offers_container.removeChild(document.getElementById(submit_button_id));
+                }
             }
         </script>
     </body>
