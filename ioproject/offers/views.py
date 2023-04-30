@@ -6,9 +6,10 @@ from .status import OrderStatus
 # from ioproject.mail.send_email import send_new_order_email
 import mail.send_email as mail
 
+
 CUSTOMER_LINK = "TODO"
 #  TODO: dodać poprawny link do strony ze zleceniem klienta
-#   (task BP?)
+#   (task IO-32)
 
 
 def register(request):
