@@ -1,7 +1,7 @@
 from ioproject.settings import BASE_DIR
 
 
-CREDENTIALS_DIR = BASE_DIR / "mail\credentials.txt"
+CREDENTIALS_DIR = BASE_DIR / "mail" / "credentials.txt"
 
 
 def load_credentials():
