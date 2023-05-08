@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Oferta Zamówienia</title>
+        <meta charset="UTF-8">
+        <style>
+            table, th, td {
+                border: 1px solid black;
+                border-collapse: collapse;
+                padding: 0.5%;
+                child-align: middle;
+            }
+            td > textarea, td > input {
+                width: 99%;
+                resize: vertical;
+            }
+            table {
+                width: 90%;
+                table-layout: fixed;
+                margin: 10px;
+            }
+            #id_column, #price_column {
+                width: 15%;
+            }
+            input, input:focus, textarea, textarea:focus {
+                border: 0;
+                border-bottom: 1px solid lightgrey;
+                outline: none;
+            }
+        </style>
+    </head>
+    <body>
+        {% if success %}
+<!--    TODO w przyszłości: w enumie ze statusami w jednym z PRów dodałem
+         str, trzeba będzie zastąpić wyświetlanie liczby na str z tego.-->
+        <h1>Szczegóły zamówienia #{{ order.id }}</h1>
+        <p>Numer rejestracyjny: {{ order.registration_number }}</p>
+        <p>Adres email: {{ order.email }}</p>
+        <p>Status naprawy: {{ order.status }}</p>
+        <div id="offers_container">
+            <h3>Oferty</h3>
+            <table id="offers_table">
+                <tr>
+                    <th id="id_column">ID</th>
+                    <th id="offer_column">Oferta</th>
+                    <th id="price_column">Cena</th>
+                </tr>
+                {% for offer in offers %}
+                <tr>
+                    <td>{{ offer.id }}</td>
+                    <td>{{ offer.offer_content }}</td>
+                    <td>{{ offer.offer_price }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% else %}
+        <h1>Coś poszło nie tak...</h1>
+        <p>{{ message }}</p>
+        {% endif %}
+
+        <script>
+            let offers_container = document.getElementById("offers_container");
+            let offers_table = document.getElementById("offers_table");
+
+        </script>
+    </body>
+</html>

@@ -2,15 +2,12 @@ import re
 from django.shortcuts import render
 from django.http import HttpResponseNotAllowed
 
+from ioproject.settings import DOMAIN_ADDRESS
+
 from .models import ClientOrder
 from .status import OrderStatus
 # from ioproject.mail.send_email import send_new_order_email
 import mail.send_email as mail
-
-
-CUSTOMER_LINK = "TODO"
-#  TODO: dodać poprawny link do strony ze zleceniem klienta
-#   (task IO-32)
 
 
 def register(request):
@@ -27,7 +24,7 @@ def register(request):
         order.save()
         order_id = order.pk
 
-        mail.send_new_order_email(email, CUSTOMER_LINK + str(order_id), order_id, registration_number)
+        mail.send_new_order_email(email, DOMAIN_ADDRESS + "orders/" + str(order_id) + "/view_offer", order_id, registration_number)
         # TODO: tutaj też ewentualne poprawki przy wysyłaniu emaila
 
         return render(request, "register.html", {"success": True})

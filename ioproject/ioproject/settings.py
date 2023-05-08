@@ -35,6 +35,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+DOMAIN_ADDRESS = "http://127.0.0.1:8000/"
+#  TODO: dodać poprawny link do strony ze zleceniem klienta
+
 # Application definition
 
 INSTALLED_APPS = [
