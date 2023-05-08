@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    table {
+      width: 100%;
+      margin: auto;
+      border: 1px solid #000;
+      border-collapse: collapse;
+    }
+    th, td {
+      text-align: center;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+    <h1>Lista zamówień</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nr rejestracji</th>
+          <th>Email</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for offer_id, offer_data in offers %}
+          <tr>
+            <td><a href="/orders/{{offer_id}}">{{ offer_id }}</a></td>
+            <td>{{ offer_data.registration_number }}</td>
+            <td>{{ offer_data.email }}</td>
+            <td>{{ offer_data.status }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+</body>
+</html>

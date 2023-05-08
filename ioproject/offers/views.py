@@ -1,5 +1,6 @@
 import re
 from django.shortcuts import render
+from django.http import HttpResponseNotAllowed
 
 from .models import ClientOrder
 from .status import OrderStatus
@@ -32,3 +33,18 @@ def register(request):
         return render(request, "register.html", {"success": True})
 
     return render(request, "register.html", {"success": False})
+
+
+def offers_list(request):
+    if request.method == "GET": # TODO authorization
+        offers = ClientOrder.objects.all()
+        offers_dict = {}
+        for offer in offers:
+            offers_dict[offer.id] = {
+                "registration_number": offer.registration_number,
+                "email": offer.email,
+                "status": str(OrderStatus(offer.status))
+            }
+        return render(request, "orders_list.html", {"offers": sorted(offers_dict.items())})
+
+    return HttpResponseNotAllowed(['GET'])
