@@ -31,15 +31,14 @@
     </head>
     <body>
         {% if success %}
+<!--    TODO w przyszłości: w enumie ze statusami w jednym z PRów dodałem
+         str, trzeba będzie zastąpić wyświetlanie liczby na str z tego.-->
         <h1>Szczegóły zamówienia #{{ order.id }}</h1>
         <p>Numer rejestracyjny: {{ order.registration_number }}</p>
         <p>Adres email: {{ order.email }}</p>
         <p>Status naprawy: {{ order.status }}</p>
         <div id="offers_container">
             <h3>Oferty</h3>
-            <form method="POST" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">
-                {%csrf_token%}
-            </form>
             <table id="offers_table">
                 <tr>
                     <th id="id_column">ID</th>
@@ -63,9 +62,6 @@
         <script>
             let offers_container = document.getElementById("offers_container");
             let offers_table = document.getElementById("offers_table");
-            let form_id = "new_offer_form";
-            let form = document.getElementById(form_id);
-            let input_counter = 0;
 
         </script>
     </body>

@@ -1,5 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
+from django.http import Http404, HttpResponseNotAllowed
 
 from offers.models import ClientOrder, MechanicOffer
 
@@ -40,7 +41,9 @@ def view_offer(request, id: int):
                                                           "order": order,
                                                           "offers": offers})
         except ObjectDoesNotExist:
-            return render(request, "offer_contents.html", {"success": False,
-                                                          "message": f"Zlecenie o numerze {id} nie istnieje."})
-    return render(request, "offer_contents.html", {"success": False,
-                                                  "message": ""})
+            raise Http404()
+            # return render(request, "offer_contents.html", {"success": False,
+            #                                               "message": f"Zlecenie o numerze {id} nie istnieje."})
+    return HttpResponseNotAllowed(["GET"],)
+    # return render(request, "offer_contents.html", {"success": False,
+    #                                               "message": ""})
