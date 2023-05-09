@@ -28,6 +28,9 @@
                 border-bottom: 1px solid lightgrey;
                 outline: none;
             }
+            input[type="submit"] {
+                border: 1px solid black;
+            }
         </style>
     </head>
     <body>
@@ -35,7 +38,25 @@
         <h1>Szczegóły zamówienia #{{ order.id }}</h1>
         <p>Numer rejestracyjny: {{ order.registration_number }}</p>
         <p>Adres email: {{ order.email }}</p>
+
+        {% if not editable %}
         <p>Status naprawy: {{ order.status_enum.label }}</p> {# TODO: if editable add an input/button/etc here #}
+        {% else %}
+        <form method="POST" action="/orders/{{order.id}}/change_status/">
+            {% csrf_token %}
+            <label for="status">Status naprawy:</label>
+                <select id="status" name="status">
+                    <option value={{order.status_enum.value}} selected>{{ order.status_enum.label }}</option>
+                    {% for status in status_list %}
+                        {% if status.label != order.status_enum.label %}
+                            <option value={{status.value}}>{{ status.label }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select>
+            <input type="submit" value="Zapisz">
+        </form>
+        {% endif %}
+
         {% if order.status > 0 or editable %}
         {% include "order_offers.html" %}
         {% endif %}
