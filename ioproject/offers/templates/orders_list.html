@@ -1,40 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    table {
-      width: 100%;
-      margin: auto;
-      border: 1px solid #000;
-      border-collapse: collapse;
-    }
-    th, td {
-      text-align: center;
-      border: 1px solid #000;
-    }
-  </style>
-</head>
-<body>
-    <h1>Lista zamówień</h1>
-    <table>
-      <thead>
+{% extends "base.html" %}
+
+{# WIDOK MECHANIKA - lista wszystkich zamówień w bazie danych #}
+
+{% block title %}Lista zamówień{% endblock %}
+
+{% block style %}
+  table {
+    width: 100%;
+    margin: auto;
+    border: 1px solid #000;
+    border-collapse: collapse;
+  }
+  th, td {
+    text-align: center;
+    border: 1px solid #000;
+  }
+{% endblock %}
+
+{% block body %}
+  <h1>Lista zamówień</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nr rejestracji</th>
+        <th>Email</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for order in orders %}
         <tr>
-          <th>ID</th>
-          <th>Nr rejestracji</th>
-          <th>Email</th>
-          <th>Status</th>
+          <td><a href="/orders/{{order.id}}">{{ order.id }}</a></td>
+          <td>{{ order.registration_number }}</td>
+          <td>{{ order.email }}</td>
+          <td>{{ order.status_enum.label }}</td>
         </tr>
-      </thead>
-      <tbody>
-        {% for offer_id, offer_data in offers %}
-          <tr>
-            <td><a href="/orders/{{offer_id}}">{{ offer_id }}</a></td>
-            <td>{{ offer_data.registration_number }}</td>
-            <td>{{ offer_data.email }}</td>
-            <td>{{ offer_data.status }}</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-</body>
-</html>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
