@@ -4,8 +4,7 @@ from django.http import HttpResponseNotAllowed
 
 from ioproject.settings import DOMAIN_ADDRESS
 
-from .models import ClientOrder
-from .status import OrderStatus
+from .models import ClientOrder, OrderStatus
 # from ioproject.mail.send_email import send_new_order_email
 import mail.send_email as mail
 
@@ -34,14 +33,7 @@ def register(request):
 
 def offers_list(request):
     if request.method == "GET": # TODO authorization
-        offers = ClientOrder.objects.all()
-        offers_dict = {}
-        for offer in offers:
-            offers_dict[offer.id] = {
-                "registration_number": offer.registration_number,
-                "email": offer.email,
-                "status": str(OrderStatus(offer.status))
-            }
-        return render(request, "orders_list.html", {"offers": sorted(offers_dict.items())})
+        orders = ClientOrder.objects.all()
+        return render(request, "orders_list.html", {"orders": sorted(list(orders), key=lambda order: order.id)})
 
     return HttpResponseNotAllowed(['GET'])
