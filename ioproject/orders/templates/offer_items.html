@@ -1,0 +1,28 @@
+<div id="items-container">
+    <table id="items-table">
+        <tr>
+            <th id="offer_id">ID oferty</th>
+            <th id="name_column">Nazwa</th>
+            <th id="desc_column">Opis</th>
+            <th id="link_column">Link</th>
+            <th id="price_column">Cena</th>
+            <th></th>
+        </tr>
+        {% if editable %}
+            {% for offer in offers %}
+                <tr>
+                    <form method="POST" name={{offer.id}} id={{offer.id}}
+                          action="/offers/{{offer.id}}/add-item/">
+                        {%csrf_token%}
+                        <td>{{ offer.id }}</td>
+                        <td><input type="text" name="name" required></td>
+                        <td><textarea name="description" form={{offer.id}} required></textarea></td>
+                        <td><input type="url" name="link" required></td>
+                        <td><input type="number" step="0.01" min="0" name="price" required></td>
+                        <td><button type="submit">Zapisz</button></td>
+                    </form>
+                </tr>
+            {% endfor %}
+        {% endif %}
+    </table>
+</div>

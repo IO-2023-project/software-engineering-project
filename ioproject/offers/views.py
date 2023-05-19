@@ -1,10 +1,10 @@
 import re
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponseNotAllowed
 
 from ioproject.settings import DOMAIN_ADDRESS
 
-from .models import ClientOrder, OrderStatus
+from .models import ClientOrder, OrderStatus, OfferItem, MechanicOffer
 # from ioproject.mail.send_email import send_new_order_email
 import mail.send_email as mail
 
@@ -37,3 +37,17 @@ def offers_list(request):
         return render(request, "orders_list.html", {"orders": sorted(list(orders), key=lambda order: order.id)})
 
     return HttpResponseNotAllowed(['GET'])
+
+
+def add_item(request, id: int):
+    if request.method == "POST":
+        data = request.POST
+        try:
+            offer = MechanicOffer.objects.get(id=id)
+            item = OfferItem(item_name=data["name"], item_description=data["description"], item_link=data["link"], item_price=data["price"])
+            item.save()
+            offer.offer_items.add(item)
+            offer.save()
+            return redirect(f"/orders/{offer.client_order.id}")
+        except Exception as e:
+            return render(request, "register.html", {"success": False, "message": e})
