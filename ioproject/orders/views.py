@@ -31,7 +31,7 @@ def add_offer(request, id: int):
         for i in range(len(data) // 2):
             content = data.get(f"offer_content_{i+1}")
             price = data.get(f"offer_price_{i+1}")
-            offer = MechanicOffer(client_order=ClientOrder.objects.get(id=id), offer_content=content, offer_price=price)
+            offer = MechanicOffer(client_order=ClientOrder.objects.get(id=id), offer_content=content, work_price=price)
             offer.save()
         return redirect(f"/orders/{id}")
     return render(request, "order_details.html", {"success": False,
