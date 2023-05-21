@@ -60,6 +60,10 @@
         {% if order.status > 0 or editable %}
         {% include "order_offers.html" %}
         {% endif %}
+
+        {% if editable %}
+        {% include "offer_items.html" %}
+        {% endif %}
     {% else %}
         <h1>Coś poszło nie tak...</h1>
         <p>{{ message }}</p>
