@@ -56,6 +56,18 @@ def view_offer(request, id: int):
     # return render(request, "offer_contents.html", {"success": False,
     #                                               "message": ""})
 
+def choose_offer(request, order_id: int, offer_id: int):
+    if request.method == "POST":
+        try:
+            order = ClientOrder.objects.get(id=order_id)
+            order.status = status=OrderStatus.WAITING_FOR_PARTS.value
+            order.save()
+            # TODO oznaczyć wybraną ofertę - pokazać mechanikowi i klientowi wybór
+            return redirect(f"/orders/{order_id}/view_offer")
+        except ObjectDoesNotExist:
+            raise Http404()
+    return HttpResponseNotAllowed(["POST"],)
+
 
 def change_status(request, id: int):
     if request.method == "POST":

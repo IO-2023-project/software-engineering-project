@@ -4,20 +4,42 @@
     <form method="POST" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">
         {%csrf_token%}
     </form>
+    {% elif not editable and order.status == 1 %}
+    <form method="POST"  action="/orders/{{order.id}}/choose_offer/{{offer.id}}">
+        {%csrf_token%}
+    </form>
     {% endif %}
     <table id="offers_table">
         <tr>
             <th id="id_column">ID</th>
             <th id="offer_column">Oferta</th>
             <th id="price_column">Cena</th>
+            {% if not editable and order.status == 1 %}
+            <th id="decision_column">Wybierz Ofertę</th>
+            {% endif %}
         </tr>
-        {% for offer in offers %}
-        <tr>
-            <td>{{ offer.id }}</td>
-            <td>{{ offer.offer_content }}</td>
-            <td>{{ offer.work_price }}</td>
-        </tr>
-        {% endfor %}
+        {% if not editable and order.status == 1 %}
+            {% for offer in offers %}
+            <tr>
+            <form method="POST" name="choose_offer_form" id="choose_offer_form"
+                          action="/orders/{{order.id}}/choose_offer/{{offer.id}}">
+                {%csrf_token%}
+                <td>{{ offer.id }}</td>
+                <td>{{ offer.offer_content }}</td>
+                <td>{{ offer.work_price }}</td>
+                <td><button type="submit">Wybierz</button></td>
+            </form>
+            </tr>
+            {% endfor %}
+        {% else %}
+            {% for offer in offers %}
+            <tr>
+                <td>{{ offer.id }}</td>
+                <td>{{ offer.offer_content }}</td>
+                <td>{{ offer.work_price }}</td>
+            </tr>
+            {% endfor %}
+        {% endif %}
     </table>
     {% if editable %}
     <button id="add_offer_button" onclick="addRow()">Dodaj ofertę</button>
