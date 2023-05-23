@@ -19,7 +19,7 @@ def register(request):
             return render(request, "register.html", {"success": False, "invalid_email": True})
 
         order = ClientOrder(registration_number=registration_number, email=email,
-                            status=OrderStatus.WAITING_FOR_OFFERS.value)
+                            status=OrderStatus.WAITING_FOR_OFFERS.value, chosen_offer=None)
         order.save()
         order_id = order.pk
 

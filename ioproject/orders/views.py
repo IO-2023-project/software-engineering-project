@@ -61,8 +61,8 @@ def choose_offer(request, order_id: int, offer_id: int):
         try:
             order = ClientOrder.objects.get(id=order_id)
             order.status = status=OrderStatus.WAITING_FOR_PARTS.value
+            order.chosen_offer = MechanicOffer.objects.get(id=offer_id)
             order.save()
-            # TODO oznaczyć wybraną ofertę - pokazać mechanikowi i klientowi wybór
             return redirect(f"/orders/{order_id}/view_offer")
         except ObjectDoesNotExist:
             raise Http404()
