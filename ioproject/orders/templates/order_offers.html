@@ -32,13 +32,29 @@
             </tr>
             {% endfor %}
         {% else %}
-            {% for offer in offers %}
-            <tr>
-                <td>{{ offer.id }}</td>
-                <td>{{ offer.offer_content }}</td>
-                <td>{{ offer.work_price }}</td>
-            </tr>
-            {% endfor %}
+            {% if order.status < 2 or order.chosen_offer == None%}
+                {% for offer in offers %}
+                <tr>
+                    <td>{{ offer.id }}</td>
+                    <td>{{ offer.offer_content }}</td>
+                    <td>{{ offer.work_price }}</td>
+                </tr>
+                {% endfor %}
+            {% else %}
+                {% for offer in offers %}
+                <tr>
+                    {% if order.chosen_offer.id == offer.id %}
+                        <td class="selected_offer"><b>{{ offer.id }}</b></td>
+                        <td class="selected_offer"><b>{{ offer.offer_content }}</b></td>
+                        <td class="selected_offer"><b>{{ offer.work_price }}</b></td>
+                    {% else %}
+                        <td class="unselected_offer">{{ offer.id }}</td>
+                        <td class="unselected_offer">{{ offer.offer_content }}</td>
+                        <td class="unselected_offer">{{ offer.work_price }}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            {% endif %}
         {% endif %}
     </table>
     {% if editable %}
