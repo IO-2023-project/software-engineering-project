@@ -13,7 +13,7 @@ class ClientOrder(models.Model):
     registration_number = models.CharField(max_length=12)
     email = models.EmailField()
     status = models.IntegerField(default=OrderStatus.WAITING_FOR_OFFERS, choices=OrderStatus.choices)
-    chosen_offer = models.ForeignKey("MechanicOffer", on_delete=models.CASCADE, blank=True, null=True)
+    chosen_offer = models.ForeignKey("MechanicOffer", on_delete=models.SET_NULL, blank=True, null=True, default=None)
 
     def status_enum(self):
         return OrderStatus(self.status)
