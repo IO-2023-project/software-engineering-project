@@ -32,7 +32,7 @@
             </tr>
             {% endfor %}
         {% else %}
-            {% if order.status < 2 %}
+            {% if order.status < 2 or order.chosen_offer == None%}
                 {% for offer in offers %}
                 <tr>
                     <td>{{ offer.id }}</td>
