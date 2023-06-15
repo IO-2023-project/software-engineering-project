@@ -4,6 +4,7 @@ from email.message import EmailMessage
 
 from mail.load_credentials import load_credentials
 
+from offers.models import ClientOrder, MechanicOffer, OrderStatus
 
 # TODO: dodać link do strony z logowaniem dla kliena
 LOGIN_CUSTOMER_PAGE = "TODO: link do strony ze sprawdzaniem zamówień"  # nie wiem jaki ma być link
@@ -52,5 +53,22 @@ def send_new_order_email(customer_email: str, link: str, order_id: int, registra
 
     send_email(customer_email, msg)
 
-# przykład wywołania
-# send_new_order_email("b.pawelek-sliwa@wp.pl", "https://tenor.com/pl/view/cheers-raise-your-glass-gentlemen-nice-clapping-gif-5555911", 0, "KK 678J")
+
+def email_about_chosen_offer(order_id: int, offer_id: int):
+    registration_number = ClientOrder.objects.get(id=order_id).registration_number
+    offer_name = MechanicOffer.objects.get(id=offer_id).offer_content
+
+    msg = EmailMessage()
+
+    msg["Subject"] = f"Zlecenie {order_id}: wybrano ofertę"
+
+    body = (f"Klient wybrał ofetę:\n"
+            f"\tZlecenie nr {order_id} dotyczące pojazdu o numerze rejestracyjnym {registration_number}.\n"
+            f"\tWybrano:\n"
+            f"\t\tOferta nr {offer_id}: {offer_name}\n")
+
+    msg.set_content(body)
+
+    mechanic_email = SENDER_EMAIL
+
+    send_email(mechanic_email, msg)
