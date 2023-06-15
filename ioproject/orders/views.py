@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponseNotAllowed
 
 from offers.models import ClientOrder, MechanicOffer, OrderStatus
 import mail.send_email as mail
+from mail.send_email import email_about_chosen_offer
 
 STATUS_LIST = [status for status in OrderStatus]
 
@@ -29,8 +30,8 @@ def add_offer(request, id: int):
     if request.method == "POST":
         data = request.POST
         for i in range(len(data) // 2):
-            content = data.get(f"offer_content_{i+1}")
-            price = data.get(f"offer_price_{i+1}")
+            content = data.get(f"offer_content_{i + 1}")
+            price = data.get(f"offer_price_{i + 1}")
             offer = MechanicOffer(client_order=ClientOrder.objects.get(id=id), offer_content=content, work_price=price)
             offer.save()
         return redirect(f"/orders/{id}")
@@ -52,9 +53,10 @@ def view_offer(request, id: int):
             raise Http404()
             # return render(request, "offer_contents.html", {"success": False,
             #                                               "message": f"Zlecenie o numerze {id} nie istnieje."})
-    return HttpResponseNotAllowed(["GET"],)
+    return HttpResponseNotAllowed(["GET"], )
     # return render(request, "offer_contents.html", {"success": False,
     #                                               "message": ""})
+
 
 def choose_offer(request, order_id: int, offer_id: int):
     if request.method == "POST":
@@ -63,10 +65,11 @@ def choose_offer(request, order_id: int, offer_id: int):
             order.status = OrderStatus.WAITING_FOR_PARTS.value
             order.chosen_offer = MechanicOffer.objects.get(id=offer_id)
             order.save()
+            email_about_chosen_offer(order_id, offer_id)
             return redirect(f"/orders/{order_id}/view_offer")
         except ObjectDoesNotExist:
             raise Http404()
-    return HttpResponseNotAllowed(["POST"],)
+    return HttpResponseNotAllowed(["POST"], )
 
 
 def change_status(request, id: int):
@@ -83,4 +86,3 @@ def change_status(request, id: int):
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,
                                                           "message": f"Zlecenie o numerze {id} nie istnieje."})
-
