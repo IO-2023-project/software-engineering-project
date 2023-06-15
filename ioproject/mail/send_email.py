@@ -2,8 +2,10 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
+from ioproject.settings import DOMAIN_ADDRESS
 from mail.load_credentials import load_credentials
 
+from offers.models import ClientOrder, MechanicOffer, OrderStatus
 
 # TODO: dodać link do strony z logowaniem dla kliena
 LOGIN_CUSTOMER_PAGE = "TODO: link do strony ze sprawdzaniem zamówień"  # nie wiem jaki ma być link
@@ -52,5 +54,26 @@ def send_new_order_email(customer_email: str, link: str, order_id: int, registra
 
     send_email(customer_email, msg)
 
-# przykład wywołania
-# send_new_order_email("b.pawelek-sliwa@wp.pl", "https://tenor.com/pl/view/cheers-raise-your-glass-gentlemen-nice-clapping-gif-5555911", 0, "KK 678J")
+
+def send_email_about_created_offers(order_id: int):
+    order = ClientOrder.objects.get(id=order_id)
+
+    email = order.email
+
+    registration_number = order.registration_number
+
+    link = DOMAIN_ADDRESS + "orders/" + str(order_id) + "/view_offer"
+
+    msg = EmailMessage()
+
+    msg["Subject"] = f"Mechanik - Przykładowe oferty"
+
+    body = (f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało zaktualizowane.\n"
+            f"Możesz wybrać ofertę serwisu pojazdu pod tym linkiem:\n\t{link}\n"
+            # f"lub zalogować się na stronie:\n\t{LOGIN_CUSTOMER_PAGE}\n"
+            # f"za pomocą id zlecenia:\n\t{order_id}\n\n"
+            f"Twój Pan Mechanik")
+
+    msg.set_content(body)
+
+    send_email(email, msg)

@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseNotAllowed
 
 from offers.models import ClientOrder, MechanicOffer, OrderStatus
-
+import mail.send_email as mail
 
 STATUS_LIST = [status for status in OrderStatus]
 
@@ -60,7 +60,7 @@ def choose_offer(request, order_id: int, offer_id: int):
     if request.method == "POST":
         try:
             order = ClientOrder.objects.get(id=order_id)
-            order.status = status=OrderStatus.WAITING_FOR_PARTS.value
+            order.status = OrderStatus.WAITING_FOR_PARTS.value
             order.chosen_offer = MechanicOffer.objects.get(id=offer_id)
             order.save()
             return redirect(f"/orders/{order_id}/view_offer")
@@ -77,6 +77,8 @@ def change_status(request, id: int):
             order = ClientOrder.objects.get(id=id)
             order.status = int(new_status)
             order.save()
+            if order.status == OrderStatus.WAITING_FOR_CLIENT_DECISION.value:
+                mail.send_email_about_created_offers(id)
             return redirect(f"/orders/{id}")
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,
