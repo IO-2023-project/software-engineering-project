@@ -1,5 +1,10 @@
 <div id="items-container">
-    <table id="items-table">
+    {% if editable %}
+    {% for offer in offers %}
+    <form method="POST" name={{offer.id}} id={{offer.id}}
+          action="/offers/{{offer.id}}/add-items/">
+        {%csrf_token%}
+    <table id="items-table" class="tableid-{{offer.id}}">
         <tr>
             <th id="offer_id">ID oferty</th>
             <th id="name_column">Nazwa</th>
@@ -7,34 +12,59 @@
             <th id="link_column">Link</th>
             <th id="price_column">Cena</th>
         </tr>
-        {% if editable %}
-            {% for offer in offers %}
-                <tr><td>{{ offer.id }}</td></tr>
-                {% for key, all_items in order_items.items %}
-                    {% if key == offer.id %}
-                        {% for item in all_items %}
-                            <tr>
-                                <td></td>
-                                <td>{{item.item_name}}</td>
-                                <td>{{item.item_description}}</td>
-                                <td>{{item.item_link}}</td>
-                                <td>{{item.item_price}}</td>
-                            </tr>
-                        {% endfor %}
-                    {% endif %}
+        <tr><td>{{ offer.id }}</td></tr>
+        {% for key, all_items in order_items.items %}
+            {% if key == offer.id %}
+                {% for item in all_items %}
+                    <tr>
+                        <td></td>
+                        <td>{{item.item_name}}</td>
+                        <td>{{item.item_description}}</td>
+                        <td><a href="{{item.item_link}}">{{item.item_link}}</a></td>
+                        <td>{{item.item_price}}</td>
+                    </tr>
                 {% endfor %}
-                <tr>
-                    <form method="POST" name={{offer.id}} id={{offer.id}}
-                          action="/offers/{{offer.id}}/add-item/">
-                        {%csrf_token%}
-                        <td><button type="submit">Zapisz</button></td>
-                        <td><input type="text" name="name" required></td>
-                        <td><textarea name="description" form={{offer.id}} required></textarea></td>
-                        <td><input type="url" name="link" required></td>
-                        <td><input type="number" step="0.01" min="0" name="price" required></td>
-                    </form>
-                </tr>
-            {% endfor %}
-        {% endif %}
+            {% endif %}
+        {% endfor %}
+        {% for key, val in offer_prices.items %}
+            {% if key == offer.id %}
+            <tr><td colspan=4>Suma</td><td>{{ val }}</td></tr>
+            {% endif %}
+        {% endfor %}
+
+        <tr>
+                <td><button type="button" onclick="add_another({{offer.id}})" >Dodaj kolejny element</button></td>
+                <td><input type="text" name="name[]" required></td>
+                <td><textarea name="description[]" form={{offer.id}} required></textarea></td>
+                <td><input type="url" name="link[]" required></td>
+                <td><input type="number" step="0.01" min="0" name="price[]" required></td>
+        </tr>
+            <tr><td><button type="submit">Zapisz</button></td></tr>
+
     </table>
+    </form>
+    {% endfor %}
+    {% endif %}
 </div>
+<script>
+    function add_another(a) {
+        var table = document.getElementsByClassName("tableid-" + a)[0];
+        var row = table.insertRow(table.rows.length - 1);
+        var id = row.insertCell(0);
+        var name = row.insertCell(1);
+        var description = row.insertCell(2);
+        var link = row.insertCell(3);
+        var price = row.insertCell(4);
+        id.innerHTML = "<button type=\"button\" onclick=\"add_another(" + a + ")\">Dodaj kolejny element</button>"
+        name.innerHTML = "<input type=\"text\" name=\"name[]\" required>"
+        description.innerHTML = "<textarea name=\"description[]\" form=\"" + a + "\" required></textarea>"
+        link.innerHTML = "<input type=\"url\" name=\"link[]\" required>"
+        price.innerHTML = "<input type=\"number\" step=\"0.01\" min=\"0\" name=\"price[]\" required>"
+        for (let i=0; i < table.rows.length-2; i++) {
+            let row = table.rows[i];
+            console.log(row.innerHTML);
+            if (row.cells[0].innerHTML === "<button type=\"button\" onclick=\"add_another(" + a + ")\">Dodaj kolejny element</button>")
+                row.cells[0].innerHTML = "";
+        }
+    }
+</script>

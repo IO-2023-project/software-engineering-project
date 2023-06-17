@@ -16,16 +16,19 @@ def get_order(request, id: int):
             ids = [offer["id"] for offer in offers]
             items = OfferItem.objects.filter(mechanicoffer__id__in=ids)
             sorted_items = {}
+            offer_prices = {}
             for item in items:
                 mechanic_offers = MechanicOffer.objects.filter(offer_items__id=item.id)
                 for mechanic_offer in mechanic_offers:
                     sorted_items[mechanic_offer.id] = sorted_items.get(mechanic_offer.id, []) + [item]
+                    offer_prices[mechanic_offer.id] = round(offer_prices.get(mechanic_offer.id, mechanic_offer.work_price) + item.item_price, 2)
 
             return render(request, "order_details.html", {"success": True,
                                                           "editable": True,
                                                           "order": order,
                                                           "offers": offers,
                                                           "order_items": sorted_items,
+                                                          "offer_prices": offer_prices,
                                                           "status_list": STATUS_LIST})
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,
