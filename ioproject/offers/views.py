@@ -51,3 +51,25 @@ def add_item(request, id: int):
             return redirect(f"/orders/{offer.client_order.id}")
         except Exception as e:
             return render(request, "register.html", {"success": False, "message": e})
+
+
+def add_items(request, id: int):
+    if request.method == "POST":
+        data = request.POST
+        try:
+            offer = MechanicOffer.objects.get(id=id)
+            items = []
+            print(data)
+            for i in range(len(data.getlist("name[]"))):
+                items.append(OfferItem(item_name=data.getlist("name[]")[i],
+                                       item_description=data.getlist("description[]")[i],
+                                       item_link=data.getlist("link[]")[i],
+                                       item_price=data.getlist("price[]")[i]))
+            for item in items:
+                item.save()
+                offer.offer_items.add(item)
+                offer.save()
+            return redirect(f"/orders/{offer.client_order.id}")
+        except Exception as e:
+            print(e)
+            return render(request, "register.html", {"success": False, "message": e})
