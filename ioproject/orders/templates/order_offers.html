@@ -9,13 +9,23 @@
         <tr>
             <th id="id_column">ID</th>
             <th id="offer_column">Oferta</th>
-            <th id="price_column">Cena</th>
+            <th id="work_price_column">Cena robocizny</th>
+            {% if offer_prices %}
+            <th id="total_price_column">Cena łączna</th>
+            {% endif %}
         </tr>
         {% for offer in offers %}
         <tr>
             <td>{{ offer.id }}</td>
             <td>{{ offer.offer_content }}</td>
             <td>{{ offer.work_price }}</td>
+            {% if offer_prices %}
+            {% for key, val in offer_prices.items %}
+                {% if key == offer.id %}
+                <td>{{ val }}</td>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
         </tr>
         {% endfor %}
     </table>
