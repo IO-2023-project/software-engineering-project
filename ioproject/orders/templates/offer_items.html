@@ -26,6 +26,13 @@
                 {% endfor %}
             {% endif %}
         {% endfor %}
+        <tr>
+            <td></td>
+            <td><b>Robocizna</b></td>
+            <td>Cena za trud włożony w naprawę</td>
+            <td></td>
+            <td>{{offer.work_price}}</td>
+        </tr>
         {% for key, val in offer_prices.items %}
             {% if key == offer.id %}
             <tr><td colspan=4>Suma</td><td>{{ val }}</td></tr>
