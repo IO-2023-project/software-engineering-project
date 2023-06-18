@@ -2,9 +2,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
 from django.http import Http404, HttpResponseNotAllowed
 
-from offers.models import ClientOrder, MechanicOffer, OrderStatus
-import mail.send_email as mail
+from offers.models import ClientOrder, MechanicOffer, OrderStatus, OfferItem
 
+import mail.send_email as mail
 
 STATUS_LIST = [status for status in OrderStatus]
 
@@ -14,10 +14,22 @@ def get_order(request, id: int):
         try:
             order = ClientOrder.objects.get(id=id)
             offers = MechanicOffer.objects.filter(client_order_id=id).values()
+            ids = [offer["id"] for offer in offers]
+            items = OfferItem.objects.filter(mechanicoffer__id__in=ids)
+            sorted_items = {}
+            offer_prices = {}
+            for item in items:
+                mechanic_offers = MechanicOffer.objects.filter(offer_items__id=item.id)
+                for mechanic_offer in mechanic_offers:
+                    sorted_items[mechanic_offer.id] = sorted_items.get(mechanic_offer.id, []) + [item]
+                    offer_prices[mechanic_offer.id] = round(offer_prices.get(mechanic_offer.id, mechanic_offer.work_price) + item.item_price, 2)
+
             return render(request, "order_details.html", {"success": True,
                                                           "editable": True,
                                                           "order": order,
                                                           "offers": offers,
+                                                          "order_items": sorted_items,
+                                                          "offer_prices": offer_prices,
                                                           "status_list": STATUS_LIST})
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,

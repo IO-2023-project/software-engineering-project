@@ -1,0 +1,114 @@
+<div id="offers_container">
+    <h3>Oferty</h3>
+    {% if editable %}
+    <form method="POST" name="new_offer_form" id="new_offer_form" action="/orders/{{order.id}}/add_offer">
+        {%csrf_token%}
+    </form>
+    {% endif %}
+    <table id="offers_table">
+        <tr>
+            <th id="id_column">ID</th>
+            <th id="offer_column">Oferta</th>
+            <th id="work_price_column">Cena robocizny</th>
+            {% if offer_prices %}
+            <th id="total_price_column">Cena łączna</th>
+            {% endif %}
+        </tr>
+        {% for offer in offers %}
+        <tr>
+            <td>{{ offer.id }}</td>
+            <td>{{ offer.offer_content }}</td>
+            <td>{{ offer.work_price }}</td>
+            {% if offer_prices %}
+            {% for key, val in offer_prices.items %}
+                {% if key == offer.id %}
+                <td>{{ val }}</td>
+                {% endif %}
+            {% endfor %}
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+    {% if editable %}
+    <button id="add_offer_button" onclick="addRow()">Dodaj ofertę</button>
+    {% endif %}
+</div>
+{% if editable %}
+<script>
+    let offers_container = document.getElementById("offers_container");
+    let offers_table = document.getElementById("offers_table");
+    let form_id = "new_offer_form";
+    let form = document.getElementById(form_id);
+    let submit_button_id = "submit_button";
+    let delete_offer_button_id = "delete_offer_button";
+    let input_counter = 0;
+
+    function addRow() {
+        input_counter++;
+
+        let new_row = document.createElement("tr");
+        new_row.setAttribute("id", "row_" + input_counter);
+
+        addCellToRow(new_row, null);
+
+        let content_input = document.createElement("textarea");
+        content_input.setAttribute("name", "offer_content_" + input_counter);
+        content_input.setAttribute("form", form_id);
+        content_input.required = true;
+        addCellToRow(new_row, content_input);
+
+        let price_input = document.createElement("input");
+        price_input.setAttribute("name", "offer_price_" + input_counter);
+        price_input.setAttribute("type", "number");
+        price_input.setAttribute("step", "0.01");
+        price_input.setAttribute("min", "0");
+        price_input.setAttribute("form", form_id);
+        price_input.required = true;
+        addCellToRow(new_row, price_input);
+
+        offers_table.appendChild(new_row);
+
+        if (input_counter === 1) {
+            createButtons();
+        }
+    }
+
+    function addCellToRow(row, cell_content) {
+        let cell = document.createElement("td");
+        if (cell_content !== null) {
+            cell.appendChild(cell_content);
+        }
+        row.appendChild(cell);
+    }
+
+    function createButtons() {
+        let delete_button = document.createElement("button");
+            delete_button.setAttribute("id", delete_offer_button_id);
+            delete_button.appendChild(document.createTextNode("Usuń ostatnią ofertę"));
+            delete_button.setAttribute("onclick", "removeRow()");
+            offers_container.appendChild(delete_button);
+
+            let submit_button = document.createElement("button");
+            submit_button.setAttribute("type", "submit");
+            submit_button.setAttribute("form", form_id);
+            submit_button.setAttribute("id", submit_button_id);
+            submit_button.appendChild(document.createTextNode("Zapisz"));
+            form.setAttribute("onsubmit", "removeSubmitButton()");
+            offers_container.appendChild(submit_button);
+    }
+
+    function removeSubmitButton() {
+        offers_container.removeChild(document.getElementById(submit_button_id));
+    }
+
+    function removeRow() {
+        offers_table.removeChild(document.getElementById("row_" + input_counter));
+        input_counter--;
+
+        if (input_counter === 0) {
+            offers_container.removeChild(document.getElementById(delete_offer_button_id));
+            offers_container.removeChild(document.getElementById(submit_button_id));
+        }
+    }
+</script>
+{% endif %}

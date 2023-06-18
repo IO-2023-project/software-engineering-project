@@ -64,8 +64,10 @@
         </form>
         {% endif %}
 
-        {% if order.status > 0 or editable %}
+        {% if order.status > 0 and not editable %}
         {% include "order_offers.html" %}
+        {% elif editable %}
+        {% include "mechanic_order_offers.html" %}
         {% endif %}
 
         {% if editable %}
