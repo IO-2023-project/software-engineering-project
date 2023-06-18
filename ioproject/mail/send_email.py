@@ -2,6 +2,7 @@ import smtplib
 import ssl
 from email.message import EmailMessage
 
+from ioproject.settings import DOMAIN_ADDRESS
 from mail.load_credentials import load_credentials
 
 from offers.models import ClientOrder, MechanicOffer, OrderStatus
@@ -54,6 +55,30 @@ def send_new_order_email(customer_email: str, link: str, order_id: int, registra
     send_email(customer_email, msg)
 
 
+def send_email_about_created_offers(order_id: int):
+    order = ClientOrder.objects.get(id=order_id)
+
+    email = order.email
+
+    registration_number = order.registration_number
+
+    link = DOMAIN_ADDRESS + "orders/" + str(order_id) + "/view_offer"
+
+    msg = EmailMessage()
+
+    msg["Subject"] = f"Mechanik - proponowane oferty"
+
+    body = (f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało zaktualizowane.\n"
+            f"Możesz wybrać ofertę serwisu pojazdu pod tym linkiem:\n\t{link}\n\n"
+            # f"lub zalogować się na stronie:\n\t{LOGIN_CUSTOMER_PAGE}\n"
+            # f"za pomocą id zlecenia:\n\t{order_id}\n\n"
+            f"Twój Pan Mechanik")
+
+    msg.set_content(body)
+
+    send_email(email, msg)
+
+
 def email_about_chosen_offer(order_id: int, offer_id: int):
     registration_number = ClientOrder.objects.get(id=order_id).registration_number
     offer_name = MechanicOffer.objects.get(id=offer_id).offer_content
@@ -72,3 +97,4 @@ def email_about_chosen_offer(order_id: int, offer_id: int):
     mechanic_email = SENDER_EMAIL
 
     send_email(mechanic_email, msg)
+

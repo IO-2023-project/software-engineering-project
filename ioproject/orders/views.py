@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponseNotAllowed
 
 from offers.models import ClientOrder, MechanicOffer, OrderStatus, OfferItem
 
-from mail.send_email import email_about_chosen_offer
+import mail.send_email as mail
 
 STATUS_LIST = [status for status in OrderStatus]
 
@@ -74,10 +74,10 @@ def choose_offer(request, order_id: int, offer_id: int):
     if request.method == "POST":
         try:
             order = ClientOrder.objects.get(id=order_id)
-            order.status = status = OrderStatus.WAITING_FOR_PARTS.value
+            order.status = OrderStatus.WAITING_FOR_PARTS.value
             order.chosen_offer = MechanicOffer.objects.get(id=offer_id)
             order.save()
-            email_about_chosen_offer(order_id, offer_id)
+            mail.email_about_chosen_offer(order_id, offer_id)
             return redirect(f"/orders/{order_id}/view_offer")
         except ObjectDoesNotExist:
             raise Http404()
@@ -92,6 +92,8 @@ def change_status(request, id: int):
             order = ClientOrder.objects.get(id=id)
             order.status = int(new_status)
             order.save()
+            if order.status == OrderStatus.WAITING_FOR_CLIENT_DECISION.value:
+                mail.send_email_about_created_offers(id)
             return redirect(f"/orders/{id}")
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,
