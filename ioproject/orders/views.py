@@ -94,6 +94,9 @@ def change_status(request, id: int):
             order.save()
             if order.status == OrderStatus.WAITING_FOR_CLIENT_DECISION.value:
                 mail.send_email_about_created_offers(id)
+            if order.status == OrderStatus.READY_TO_COLLECT.value:
+                mail.finished_order_email(id)
+
             return redirect(f"/orders/{id}")
         except ObjectDoesNotExist:
             return render(request, "order_details.html", {"success": False,
