@@ -10,52 +10,44 @@
     </form>
     {% endif %}
     <table id="offers_table">
-        <tr>
-            <th id="id_column">ID</th>
-            <th id="offer_column">Oferta</th>
-            <th id="price_column">Cena</th>
-            {% if not editable and order.status == 1 %}
-            <th id="decision_column">Wybierz Ofertę</th>
-            {% endif %}
-        </tr>
-        {% if not editable and order.status == 1 %}
-            {% for offer in offers %}
+        <thead>
             <tr>
-            <form method="POST" name="choose_offer_form" id="choose_offer_form"
-                          action="/orders/{{order.id}}/choose_offer/{{offer.id}}">
-                {%csrf_token%}
-                <td>{{ offer.id }}</td>
+                <th id="id_column">ID</th>
+                <th id="offer_column">Oferta</th>
+                <th id="price_column">Cena</th>
+                {% if not editable and order.status == 1 %}
+                <th id="decision_column">Wybierz Ofertę</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody class="{% if order.chosen_offer.id != None %}hasSelection{% endif %}">
+        {% for offer in offers %}
+            <tr class="offer {% if order.chosen_offer.id == offer.id %}selected{% endif %}">
+                <td rowspan="{{offer.offer_items.all|length|add:2}}">{{ offer.id }}</td>
                 <td>{{ offer.offer_content }}</td>
-                <td>{{ offer.work_price }}</td>
-                <td><button type="submit">Wybierz</button></td>
-            </form>
+                <td><b>{{ offer.total_price }}</b></td>
+                {% if not editable and order.status == 1 %}
+                <td rowspan="{{offer.offer_items.all|length|add:2}}">
+                    <form method="POST" name="choose_offer_form" id="choose_offer_form"
+                                action="/orders/{{order.id}}/choose_offer/{{offer.id}}">
+                        {%csrf_token%}
+                        <button type="submit">Wybierz</button>
+                    </form>
+                </td>
+                {% endif %}
+            </tr>
+            {% for item in offer.offer_items.all %}
+            <tr {% if order.chosen_offer.id == offer.id %}class="selected"{% endif %}>
+                <td><a href="{{item.item_link}}">{{item.item_name}}</a>: {{item.item_description}}</td>
+                <td>{{item.item_price}}</td>
             </tr>
             {% endfor %}
-        {% else %}
-            {% if order.status < 2 or order.chosen_offer == None%}
-                {% for offer in offers %}
-                <tr>
-                    <td>{{ offer.id }}</td>
-                    <td>{{ offer.offer_content }}</td>
-                    <td>{{ offer.work_price }}</td>
-                </tr>
-                {% endfor %}
-            {% else %}
-                {% for offer in offers %}
-                <tr>
-                    {% if order.chosen_offer.id == offer.id %}
-                        <td class="selected_offer"><b>{{ offer.id }}</b></td>
-                        <td class="selected_offer"><b>{{ offer.offer_content }}</b></td>
-                        <td class="selected_offer"><b>{{ offer.work_price }}</b></td>
-                    {% else %}
-                        <td class="unselected_offer">{{ offer.id }}</td>
-                        <td class="unselected_offer">{{ offer.offer_content }}</td>
-                        <td class="unselected_offer">{{ offer.work_price }}</td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            {% endif %}
-        {% endif %}
+            <tr {% if order.chosen_offer.id == offer.id %}class="selected"{% endif %}>
+                <td>Robocizna</td>
+                <td>{{offer.work_price}}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
     </table>
     {% if editable %}
     <button id="add_offer_button" onclick="addRow()">Dodaj ofertę</button>

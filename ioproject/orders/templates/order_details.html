@@ -5,11 +5,14 @@
         <meta charset="UTF-8">
         <title>Szczegóły zamówienia</title>
         <style>
-            .selected_offer {
+            .offer {
+                border-top: 3px double black;
+            }
+            .selected {
                 color: black;
                 background-color: lightcyan;
             }
-            .unselected_offer {
+            .hasSelection > :not(.selected) {
                 color: gray;
             }
             table, th, td {
