@@ -98,3 +98,25 @@ def email_about_chosen_offer(order_id: int, offer_id: int):
 
     send_email(mechanic_email, msg)
 
+
+def finished_order_email(order_id: int):
+    order = ClientOrder.objects.get(id=order_id)
+
+    email = order.email
+
+    registration_number = order.registration_number
+
+    car_shop_address = "https://goo.gl/maps/wMY9JZrMAyuuceqn9"
+
+    msg = EmailMessage()
+
+    msg["Subject"] = f"Mechanik - Pojazd gotowy do odbioru"
+
+    body = (f"Zlecenie dotyczące pojazdu o numerze rejestracyjnym {registration_number} zostało zakończone.\n"
+            f"Możesz odebrać swój pojazd z warsztatu:\n\t{car_shop_address}\n\n"
+            f"Dziękuję za wybranie moich usług!\n"
+            f"Twój Pan Mechanik")
+
+    msg.set_content(body)
+
+    send_email(email, msg)
