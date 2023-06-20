@@ -13,16 +13,15 @@ def get_order(request, id: int):
     if request.method == "GET":
         try:
             order = ClientOrder.objects.get(id=id)
-            offers = MechanicOffer.objects.filter(client_order_id=id).values()
-            ids = [offer["id"] for offer in offers]
+            offers = MechanicOffer.objects.filter(client_order_id=id)
+            ids = [offer.id for offer in offers]
             items = OfferItem.objects.filter(mechanicoffer__id__in=ids)
             sorted_items = {}
-            offer_prices = {}
+            offer_prices = {offer.id: offer.total_price() for offer in offers}
             for item in items:
                 mechanic_offers = MechanicOffer.objects.filter(offer_items__id=item.id)
                 for mechanic_offer in mechanic_offers:
                     sorted_items[mechanic_offer.id] = sorted_items.get(mechanic_offer.id, []) + [item]
-                    offer_prices[mechanic_offer.id] = round(offer_prices.get(mechanic_offer.id, mechanic_offer.work_price) + item.item_price, 2)
 
             return render(request, "order_details.html", {"success": True,
                                                           "editable": True,
@@ -55,7 +54,7 @@ def view_offer(request, id: int):
     if request.method == "GET":
         try:
             order = ClientOrder.objects.get(id=id)
-            offers = MechanicOffer.objects.filter(client_order_id=id).values()
+            offers = MechanicOffer.objects.filter(client_order_id=id)
             return render(request, "order_details.html", {"success": True,
                                                           "editable": False,
                                                           "order": order,
